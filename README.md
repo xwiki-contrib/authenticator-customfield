@@ -3,7 +3,7 @@
 Allow using any user field in stead of the user id when logging it.
 
 * Project Lead: [Thomas Mortagne](http://www.xwiki.org/xwiki/bin/view/XWiki/ThomasMortagne)
-* [Documentation & Downloads](http://extensions.xwiki.org/xwiki/bin/view/Extension/CustomFieldAuthenticator/)
+* [Documentation & Downloads](http://extensions.xwiki.org/xwiki/bin/view/Extension/XWikiAuthenticatorCustomField/)
 * [Issue Tracker](http://jira.xwiki.org/browse/AUTHFIELD)
 * Communication: [Forum](https://forum.xwiki.org), [Chat](https://dev.xwiki.org/xwiki/bin/view/Community/Chat)
 * [Development Practices](http://dev.xwiki.org)
