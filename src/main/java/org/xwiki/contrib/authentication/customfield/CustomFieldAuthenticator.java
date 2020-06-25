@@ -73,39 +73,49 @@ public class CustomFieldAuthenticator extends XWikiAuthServiceImpl
         }
 
         // Try current wiki
-        Principal principal = authenticateWiki(username, password, xcontext);
+        XWikiDocument userDocument = authenticateWiki(username, password, xcontext);
 
         // Fallback on main wiki (if not already on it)
-        if (principal == null && !xcontext.isMainWiki()) {
+        if (userDocument == null && !xcontext.isMainWiki()) {
             String currentWiki = xcontext.getWikiId();
 
             try {
                 // Switch to main wiki
                 xcontext.setWikiId(xcontext.getMainXWiki());
-                principal = authenticateWiki(username, password, xcontext);
 
+                userDocument = authenticateWiki(username, password, xcontext);
             } finally {
                 // Restore current wiki
                 xcontext.setWikiId(currentWiki);
             }
         }
 
+        if (userDocument != null) {
+            LOGGER.debug("Found valid user with reference [{}]", userDocument.getDocumentReference());
+
+            Principal principal =
+                new SimplePrincipal(this.compactSerializer.serialize(userDocument.getDocumentReference()));
+
+            LOGGER.debug("User principal is [{}]", principal.toString());
+
+            // Remove any previous failure related message
+            removeMessage(xcontext);
+
+            return principal;
+        }
+
         // Fallback on standard XWiki authentication (if enabled)
-        if (principal == null && this.configuration.fallback()) {
+        if (this.configuration.fallback()) {
             LOGGER.debug("Fallback on standard XWiki authentication (user id)");
 
             return super.authenticate(username, password, xcontext);
         }
 
-        if (principal == null) {
-            setMessage("invalidcredentials", xcontext);
-        } else {
-            removeMessage(xcontext);
-        }
+        LOGGER.debug("Did not found any valid user");
 
-        LOGGER.debug("User principal is [{}]", principal.toString());
+        setMessage("invalidcredentials", xcontext);
 
-        return principal;
+        return null;
     }
 
     private void setMessage(String message, XWikiContext xcontext)
@@ -118,18 +128,12 @@ public class CustomFieldAuthenticator extends XWikiAuthServiceImpl
         xcontext.remove(MESSAGE);
     }
 
-    private Principal authenticateWiki(String fieldValue, String password, XWikiContext context)
+    private XWikiDocument authenticateWiki(String fieldValue, String password, XWikiContext context)
     {
         LOGGER.debug("Authenticate on wiki [{}]", context.getWikiId());
 
         try {
-            XWikiDocument userDocument = this.authenticator.authenticate(fieldValue, password, context);
-
-            if (userDocument != null) {
-                LOGGER.debug("Found valid user reference [{}]", userDocument.getDocumentReference());
-
-                return new SimplePrincipal(this.compactSerializer.serialize(userDocument.getDocumentReference()));
-            }
+            return this.authenticator.authenticate(fieldValue, password, context);
         } catch (Exception e) {
             LOGGER.debug("Failed to authenticate", e);
 
