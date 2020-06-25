@@ -64,6 +64,8 @@ public class UserManager
             "from doc.object(XWiki.XWikiUsers) as user where user." + fieldName + " = :fieldValue", Query.XWQL);
         query.bindValue("fieldValue", fieldValue);
 
+        this.logger.debug("Executing query [{}] with fieldValue={}", query.getStatement(), fieldValue);
+
         List<String> documents = query.execute();
 
         if (documents.isEmpty()) {

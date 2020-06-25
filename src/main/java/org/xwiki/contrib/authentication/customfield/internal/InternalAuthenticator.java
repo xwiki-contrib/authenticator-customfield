@@ -22,6 +22,7 @@ package org.xwiki.contrib.authentication.customfield.internal;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 
 import com.xpn.xwiki.XWikiContext;
@@ -44,6 +45,9 @@ public class InternalAuthenticator
     @Inject
     private UserManager userManager;
 
+    @Inject
+    private Logger logger;
+
     /**
      * @param fieldValue the value of the login
      * @param password the value of password
@@ -55,16 +59,27 @@ public class InternalAuthenticator
     {
         String fieldName = this.configuration.getField();
 
+        this.logger.debug("Login: {}", fieldValue);
+        this.logger.debug("Field name: {}", fieldName);
+
         String documentReference = this.userManager.getUser(fieldName, fieldValue, true);
 
         if (documentReference != null) {
+            this.logger.debug("Found profile page: {}", documentReference);
+
             XWikiDocument document = xcontext.getWiki().getDocument(documentReference, xcontext);
             BaseObject userObject = document.getXObject(UserManager.USERCLASS_REFERENCE);
             String stored = userObject.getStringValue("password");
 
             if (new PasswordClass().getEquivalentPassword(stored, password).equals(stored)) {
+                this.logger.debug("The password is matching");
+
                 return document;
+            } else {
+                this.logger.debug("The password is not matching");
             }
+        } else {
+            this.logger.debug("Failed to find any user in which the fied [{}] equals [{}]", fieldName, fieldValue);
         }
 
         return null;

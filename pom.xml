@@ -33,7 +33,7 @@
   <name>Custom Field Authenticator</name>
   <version>1.0.2-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <description>XWiki authenticator based on a configurable field instead of the use identifier</description>
+  <description>XWiki authenticator based on a configurable field instead of the user identifier</description>
 
   <properties>
     <xwiki.release.jira.skip>false</xwiki.release.jira.skip>
