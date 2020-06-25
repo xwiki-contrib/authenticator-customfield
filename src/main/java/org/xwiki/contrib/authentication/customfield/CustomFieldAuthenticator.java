@@ -42,7 +42,7 @@ import com.xpn.xwiki.web.Utils;
  */
 public class CustomFieldAuthenticator extends XWikiAuthServiceImpl
 {
-    private static final Logger LOG = LoggerFactory.getLogger(CustomFieldAuthenticator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CustomFieldAuthenticator.class);
 
     private static final String MESSAGE = "message";
 
@@ -75,9 +75,19 @@ public class CustomFieldAuthenticator extends XWikiAuthServiceImpl
         // Try current wiki
         Principal principal = authenticateWiki(username, password, xcontext);
 
-        // Fallback on main wiki (if not already in it)
+        // Fallback on main wiki (if not already on it)
         if (principal == null && !xcontext.isMainWiki()) {
-            principal = authenticateWiki(username, password, xcontext);
+            String currentWiki = xcontext.getWikiId();
+
+            try {
+                // Switch to main wiki
+                xcontext.setWikiId(xcontext.getMainXWiki());
+
+                principal = authenticateWiki(username, password, xcontext);
+            } finally {
+                // Restore current wiki
+                xcontext.setWikiId(currentWiki);
+            }
         }
 
         // Fallback on standard XWiki authentication (if enabled)
@@ -106,6 +116,8 @@ public class CustomFieldAuthenticator extends XWikiAuthServiceImpl
 
     private Principal authenticateWiki(String fieldValue, String password, XWikiContext context)
     {
+        LOGGER.debug("Authenticate on wiki [{}]", context.getWikiId());
+
         try {
             XWikiDocument userDocument = this.authenticator.authenticate(fieldValue, password, context);
 
@@ -113,7 +125,7 @@ public class CustomFieldAuthenticator extends XWikiAuthServiceImpl
                 return new SimplePrincipal(this.compactSerializer.serialize(userDocument.getDocumentReference()));
             }
         } catch (Exception e) {
-            LOG.debug("Failed to authenticate", e);
+            LOGGER.debug("Failed to authenticate", e);
 
             setMessage("loginfailed", context);
         }
