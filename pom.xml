@@ -36,6 +36,8 @@
   <description>XWiki authenticator based on a configurable field instead of the user identifier</description>
 
   <properties>
+    <xwiki.jacoco.instructionRatio>0.07</xwiki.jacoco.instructionRatio>
+
     <xwiki.release.jira.skip>false</xwiki.release.jira.skip>
     <xwiki.issueManagement.jira.id>AUTHFIELD</xwiki.issueManagement.jira.id>
 
@@ -52,6 +54,14 @@
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
+    </dependency>
+
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-tool-test-component</artifactId>
+      <version>${commons.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 

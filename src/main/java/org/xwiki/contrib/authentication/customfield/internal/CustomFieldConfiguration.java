@@ -19,6 +19,10 @@
  */
 package org.xwiki.contrib.authentication.customfield.internal;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -34,6 +38,12 @@ import org.xwiki.configuration.ConfigurationSource;
 @Singleton
 public class CustomFieldConfiguration
 {
+    private static final String EMAIL = "email";
+
+    private static final String DEFAULT_FIELD = EMAIL;
+
+    private static final Set<String> CASE_INSENSITIVE = new HashSet<>(Arrays.asList(EMAIL));
+
     @Inject
     private ConfigurationSource configuration;
 
@@ -42,7 +52,17 @@ public class CustomFieldConfiguration
      */
     public String getField()
     {
-        return this.configuration.getProperty("authentication.customfield.field", "email");
+        return this.configuration.getProperty("authentication.customfield.field", DEFAULT_FIELD);
+    }
+
+    /**
+     * @return true if the uid is case sensitive
+     * @since 1.1
+     */
+    public boolean isCaseSensitive()
+    {
+        return this.configuration.getProperty("authentication.customfield.caseSensitive",
+            !CASE_INSENSITIVE.contains(getField()));
     }
 
     /**

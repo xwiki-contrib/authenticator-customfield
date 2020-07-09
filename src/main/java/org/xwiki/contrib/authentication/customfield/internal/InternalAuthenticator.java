@@ -62,7 +62,8 @@ public class InternalAuthenticator
         this.logger.debug("Login: {}", fieldValue);
         this.logger.debug("Field name: {}", fieldName);
 
-        String documentReference = this.userManager.getUser(fieldName, fieldValue, true);
+        String documentReference =
+            this.userManager.getUser(fieldName, fieldValue, this.configuration.isCaseSensitive(), true);
 
         if (documentReference != null) {
             this.logger.debug("Found profile page: {}", documentReference);

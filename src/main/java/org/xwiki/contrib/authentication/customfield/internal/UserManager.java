@@ -54,15 +54,28 @@ public class UserManager
     /**
      * @param fieldName the name of the field containing the user identifier
      * @param fieldValue the value to match with the existing fields
+     * @param caseSensitive true of the value of the uid should be compared in a case sensitive way
      * @param warn true if several user with the same identifier should produce a warning
      * @return the reference of the user profile document containing the passed identifier
      * @throws QueryException when failing to get the user with the passed identifier
+     * @since 1.1
      */
-    public String getUser(String fieldName, String fieldValue, boolean warn) throws QueryException
+    public String getUser(String fieldName, String fieldValue, boolean caseSensitive, boolean warn)
+        throws QueryException
     {
-        Query query = this.queryManager.createQuery(
-            "from doc.object(XWiki.XWikiUsers) as user where user." + fieldName + " = :fieldValue", Query.XWQL);
-        query.bindValue("fieldValue", fieldValue);
+        StringBuilder builder = new StringBuilder("from doc.object(XWiki.XWikiUsers) as user where ");
+        if (!caseSensitive) {
+            builder.append("lower(");
+        }
+        builder.append("user.");
+        builder.append(fieldName);
+        if (!caseSensitive) {
+            builder.append(')');
+        }
+        builder.append(" = :fieldValue");
+
+        Query query = this.queryManager.createQuery(builder.toString(), Query.XWQL);
+        query.bindValue("fieldValue", caseSensitive ? fieldValue : fieldName.toLowerCase());
 
         this.logger.debug("Executing query [{}] with fieldValue={}", query.getStatement(), fieldValue);
 

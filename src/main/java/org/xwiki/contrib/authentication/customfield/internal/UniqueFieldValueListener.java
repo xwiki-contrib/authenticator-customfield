@@ -94,7 +94,7 @@ public class UniqueFieldValueListener extends AbstractEventListener
             // If the value did not changed no need to check since it would not make sense to cancel the save
             // If the value can't be found in any existing user profile then we can save it
             if (!newValue.equals(getFieldValue(field, document.getOriginalDocument()))
-                && this.userManager.getUser(field, newValue, false) != null) {
+                && this.userManager.getUser(field, newValue, this.configuration.isCaseSensitive(), false) != null) {
                 // Cancel the document save
                 ((CancelableEvent) event)
                     .cancel("A user with field [" + field + "] at [" + newValue + "] already exist");
