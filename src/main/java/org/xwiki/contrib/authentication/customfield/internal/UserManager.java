@@ -75,9 +75,9 @@ public class UserManager
         builder.append(" = :fieldValue");
 
         Query query = this.queryManager.createQuery(builder.toString(), Query.XWQL);
-        query.bindValue("fieldValue", caseSensitive ? fieldValue : fieldName.toLowerCase());
+        query.bindValue("fieldValue", caseSensitive ? fieldValue : fieldValue.toLowerCase());
 
-        this.logger.debug("Executing query [{}] with fieldValue={}", query.getStatement(), fieldValue);
+        this.logger.debug("Executing query [{}] with {}", query.getStatement(), query.getNamedParameters());
 
         List<String> documents = query.execute();
 
