@@ -1,3 +1,4 @@
+org.xwiki.contrib.authentication.customfield.internal.CustomFieldAuthService
 org.xwiki.contrib.authentication.customfield.internal.CustomFieldConfiguration
 org.xwiki.contrib.authentication.customfield.internal.InternalAuthenticator
 org.xwiki.contrib.authentication.customfield.internal.UniqueFieldValueListener
